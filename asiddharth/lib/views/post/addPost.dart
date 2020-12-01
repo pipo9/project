@@ -102,7 +102,7 @@ class _Poststate extends State<Post> {
                             }),
                         Button(
                             text: buttontext,
-                            color: Colors.teal,
+                            color: Color(0xff004766),
                             ontap: () async {
                               if (etap == 1) {
                                 setState(() {
@@ -166,7 +166,7 @@ class Containerimage extends StatelessWidget {
               ? Image.file(post.fileImage)
               : Icon(
                   Icons.add_a_photo,
-                  color: Colors.teal,
+                  color: Color(0xff004766),
                 ),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -180,7 +180,7 @@ class Containerimage extends StatelessWidget {
             ],
           ),
         ),
-        hoverColor: Colors.amber,
+        hoverColor: Color(0xff004766),
       ),
     );
   }
@@ -224,7 +224,7 @@ class Containerdesc extends StatelessWidget {
               decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.teal)),
+                      borderSide: BorderSide(color: Color(0xff004766))),
                   enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide(color: Colors.white)),

@@ -25,117 +25,122 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
+    double _width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xffF7F7F7),
       resizeToAvoidBottomInset: false,
-      body: ModalProgressHUD(
-          inAsyncCall: loading,
-          child:SafeArea(
-            child: ListView(
-              children: <Widget>[
-                SizedBox(
-                  height:_height * 0.13,
-                ),
-                Center(
-                  child: Text(
-                    'Signin',
-                    style:GoogleFonts.robotoSlab(
-                      fontSize:_height * 0.055,
+      body:  ModalProgressHUD(
+            inAsyncCall: loading,
+              child: SafeArea(
+                child:ListView(
+                  children: <Widget>[
+                   Container(
+                     margin: EdgeInsets.only(top: _height*0.01),
+                     height: _height*0.4,
+                     width: _width*0.6,
+                     child: Image.asset('images/signin.png'),
+
+                   ),
+                    Center(
+                      child: Text(
+                        'Welcom back',
+                        style:GoogleFonts.robotoSlab(
+                          fontSize:_height * 0.035,
+                        )
+                        ),
+                    ),
+                    SizedBox(
+                      height:_height * 0.03,
+                    ),
+                    Textfields(
+                      inputType: TextInputType.emailAddress,
+                      labetText: 'Email',
+                      hintText: 'Enter your email',
+                      icon: Icons.person,
+                      enabled: true,
+                      controller: emailTextController,
+                      onChanged:(value){
+                        setState(() {
+                          user.useremail=value;
+                        });
+
+                      },
+                    ),
+                    SizedBox(
+                      height:_height * 0.01,
+                    ),
+
+                    Textfields(
+                      inputType: TextInputType.visiblePassword,
+                      labetText: 'password',
+                      hintText: 'Enter your password',
+                      icon: Icons.lock,
+                      password: true,
+                      controller: passwordTextController,
+                      onChanged:(value){
+                        setState(() {
+                          user.userpassword=value;
+                        });
+
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextComp(
+                          text: "you forget password?",
+                          ontap: (){
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => Resetpass()));
+                          },
+                          alignment: AlignmentDirectional.bottomStart,
+                        ),
+                        TextComp(
+                          text: "you don't have account?",
+                          ontap: (){
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => SignUP()));
+                          },
+                          alignment: AlignmentDirectional.bottomEnd,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height:_height * 0.035,
+                    ),
+                    Button(
+                      color: Color(0xff004766),
+                        text: 'SignIn',
+                      ontap: () async {
+
+                          setState(() {
+                            loading=true;
+                          });
+                          final response =await controller.
+                          login(user.useremail!=null?user.useremail:'',
+                              user.userpassword!=null?user.userpassword:'');
+                          if (response['status']==true) {
+                            emailTextController.clear();
+                            passwordTextController.clear();
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                            }
+                          else{
+
+                            Toast.show(response['message'], context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+                          }
+
+                          setState(() {
+                            loading=false;
+                          });
+
+                      },
+
                     )
-                    ),
-                ),
-                SizedBox(
-                  height:_height * 0.13,
-                ),
-                Textfields(
-                  inputType: TextInputType.emailAddress,
-                  labetText: 'Email',
-                  hintText: 'Enter your email',
-                  icon: Icons.person,
-                  enabled: true,
-                  controller: emailTextController,
-                  onChanged:(value){
-                    setState(() {
-                      user.useremail=value;
-                    });
 
-                  },
-                ),
-                SizedBox(
-                  height:_height * 0.03,
-                ),
-
-                Textfields(
-                  inputType: TextInputType.visiblePassword,
-                  labetText: 'password',
-                  hintText: 'Enter your password',
-                  icon: Icons.lock,
-                  password: true,
-                  controller: passwordTextController,
-                  onChanged:(value){
-                    setState(() {
-                      user.userpassword=value;
-                    });
-
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextComp(
-                      text: "you forget password?",
-                      ontap: (){
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => Resetpass()));
-                      },
-                      alignment: AlignmentDirectional.bottomStart,
-                    ),
-                    TextComp(
-                      text: "you don't have account?",
-                      ontap: (){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => SignUP()));
-                      },
-                      alignment: AlignmentDirectional.bottomEnd,
-                    ),
                   ],
                 ),
-                SizedBox(
-                  height:_height * 0.085,
-                ),
-                Button(
-                    text: 'SignIn',
-                  ontap: () async {
-
-                      setState(() {
-                        loading=true;
-                      });
-                      final response =await controller.
-                      login(user.useremail!=null?user.useremail:'',
-                          user.userpassword!=null?user.userpassword:'');
-                      if (response['status']==true) {
-                        emailTextController.clear();
-                        passwordTextController.clear();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-                        }
-                      else{
-
-                        Toast.show(response['message'], context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
-                      }
-
-                      setState(() {
-                        loading=false;
-                      });
-
-                  },
-
-                )
-
-              ],
+              ),
             ),
-          ) ,
-        ),
-
     );
   }
 }

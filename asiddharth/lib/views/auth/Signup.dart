@@ -116,6 +116,7 @@ class _SignUPState extends State<SignUP> {
                 height: _height * 0.025,
               ),
               Button(
+                  color: Color(0xff004766),
                   text: 'SignUP',
                   ontap: () async {
                     setState(() {

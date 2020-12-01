@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:asiddharth/views/post/addPost.dart';
@@ -30,7 +29,7 @@ class _HomeState extends State<HomePage> {
   List<String> statuss = ['', 'public', 'private'];
   String search = '';
   String status = '';
-  List<Color> colors = [Colors.amber, Colors.green, Colors.redAccent];
+  List<Color> colors = [Color(0xff004766), Colors.green, Colors.redAccent];
   Map<String, dynamic> user = new Map();
   @override
   Widget build(BuildContext context) {
@@ -40,180 +39,194 @@ class _HomeState extends State<HomePage> {
         stream: postController.getallposts(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return  Scaffold(backgroundColor: Color(0xffF7F7F7),
+            return Scaffold(
+                backgroundColor: Color(0xffF7F7F7),
                 body: Center(child: Text('Nothing to show')));
           }
-          if(snapshot.hasData){
-          return Scaffold(
-            backgroundColor: Color(0xffF7F7F7),
-            body: ModalProgressHUD(
-              inAsyncCall: loading,
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(_height * 0.025)
-                          .copyWith(bottom: _height * 0.01),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            width: _width * 0.7,
-                            child: TextFormField(
-                              onChanged: (value) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              backgroundColor: Color(0xffF7F7F7),
+              body: ModalProgressHUD(
+                inAsyncCall: loading,
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(_height * 0.025)
+                            .copyWith(bottom: _height * 0.01),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: _width * 0.7,
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    search = value;
+                                  });
+                                },
+                                cursorColor: Colors.black,
+                                decoration: new InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: _height * 0.008,
+                                        horizontal: _width * 0.045),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        borderSide: BorderSide(
+                                          color: Colors.black,
+                                        )),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide:
+                                            BorderSide(color: Colors.black)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide:
+                                            BorderSide(color: Colors.black)),
+                                    suffixIcon: Icon(
+                                      Icons.search,
+                                      color: Colors.black,
+                                    ),
+                                    hintText: 'search'),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                icons[count],
+                                color: colors[count],
+                              ),
+                              iconSize: _height * 0.04,
+                              onPressed: () {
                                 setState(() {
-                                  search = value;
+                                  count = (count + 1) % 3;
+                                  print(status = statuss[count]);
                                 });
                               },
-                              cursorColor: Colors.black,
-                              decoration: new InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: _height * 0.008,
-                                      horizontal: _width * 0.045),
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      borderSide: BorderSide(
-                                        color: Colors.black,
-                                      )),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide:
-                                          BorderSide(color: Colors.black)),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide:
-                                          BorderSide(color: Colors.black)),
-                                  suffixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.black,
-                                  ),
-                                  hintText: 'search'),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              icons[count],
-                              color: colors[count],
-                            ),
-                            iconSize: _height * 0.04,
-                            onPressed: () {
-                              setState(() {
-                                count = (count + 1) % 3;
-                                print(status = statuss[count]);
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: Wrap(
-                            children: snapshot.data.docs
-                                .map((post) {
-                                  if (post.data()['status'].contains(status) && post.data()['category'].contains(search)) {
-                                   return GestureDetector(
-                                      onTap: () async {
-                                        setState(() {
-                                          loading = true;
-                                        });
-                                        user['id'] = post.data()['userid'];
-                                        final that = await usercontroller
-                                            .getuser(user['id']);
-                                        user['image'] = that.data()['image'];
-                                        user['name'] = that.data()['name'];
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => PostView(
-                                                    id: post.id, user: user)));
-                                        setState(() {
-                                          loading = false;
-                                        });
-                                      },
-                                      child: Container(
-                                        margin:EdgeInsets.all(_height*0.005).copyWith(bottom:0,right:0),
-                                        height: _height*0.25,
-                                        width:  _height*0.19,
-                                        child: Image(
-                                          image: NetworkImage(
-                                            post.data()['imagepath'],
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    );
-                                  }else{
-                                    return SizedBox();
-                                  }
-                                })
-                                .toList()
-                                .cast<Widget>(),
+                          ],
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: _height*0.03,
-                    )
-                  ],
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Align(
+                            alignment: AlignmentDirectional.topStart,
+                            child: Wrap(
+                              children: snapshot.data.docs
+                                  .map((post) {
+                                    if (post
+                                            .data()['status']
+                                            .contains(status) &&
+                                        post
+                                            .data()['category']
+                                            .contains(search)) {
+                                      return GestureDetector(
+                                        onTap: () async {
+                                          setState(() {
+                                            loading = true;
+                                          });
+                                          user['id'] = post.data()['userid'];
+                                          final that = await usercontroller
+                                              .getuser(user['id']);
+                                          user['image'] = that.data()['image'];
+                                          user['name'] = that.data()['name'];
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PostView(
+                                                          id: post.id,
+                                                          user: user)));
+                                          setState(() {
+                                            loading = false;
+                                          });
+                                        },
+                                        child: Container(
+                                          margin:
+                                              EdgeInsets.all(_height * 0.005)
+                                                  .copyWith(
+                                                      bottom: 0, right: 0),
+                                          height: _height * 0.25,
+                                          width: _width * 0.32,
+                                          child: Image(
+                                            image: NetworkImage(
+                                              post.data()['imagepath'],
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return SizedBox();
+                                    }
+                                  })
+                                  .toList()
+                                  .cast<Widget>(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: _height * 0.03,
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            floatingActionButton: SpeedDial(
-              marginRight: 18,
-              marginBottom: 20,
-              animatedIcon: AnimatedIcons.menu_close,
-              animatedIconTheme: IconThemeData(size: _height * 0.04),
-              overlayColor: Colors.white,
-              overlayOpacity: 0.5,
-              backgroundColor: Colors.teal,
-              elevation: 8.0,
-              shape: CircleBorder(),
-              children: [
-                SpeedDialChild(
-                    child: Icon(
-                      Icons.person,
-                    ),
-                    backgroundColor: Colors.teal,
-                    label: 'profile',
+              floatingActionButton: SpeedDial(
+                marginRight: 18,
+                marginBottom: 20,
+                animatedIcon: AnimatedIcons.menu_close,
+                animatedIconTheme: IconThemeData(size: _height * 0.04),
+                overlayColor: Colors.white,
+                overlayOpacity: 0.5,
+                backgroundColor:Color(0xff004766),
+                elevation: 8.0,
+                shape: CircleBorder(),
+                children: [
+                  SpeedDialChild(
+                      child: Icon(
+                        Icons.person,
+                      ),
+                      backgroundColor:Color(0xff004766),
+                      label: 'profile',
+                      labelStyle: TextStyle(fontSize: _width * 0.04),
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Profile()))),
+                  SpeedDialChild(
+                    child: Icon(Icons.add_a_photo),
+                    backgroundColor: Color(0xff004766),
+                    label: 'add post',
                     labelStyle: TextStyle(fontSize: _width * 0.04),
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Profile()))),
-                SpeedDialChild(
-                  child: Icon(Icons.add_a_photo),
-                  backgroundColor: Colors.teal,
-                  label: 'add post',
-                  labelStyle: TextStyle(fontSize: _width * 0.04),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Post()));
-                  },
-                ),
-                SpeedDialChild(
-                  child: Icon(Icons.open_in_new),
-                  backgroundColor: Colors.teal,
-                  label: 'Log-out',
-                  labelStyle: TextStyle(fontSize: _width * 0.04),
-                  onTap: () async {
-                    setState(() {
-                      loading = true;
-                    });
-                    await usercontroller.logout();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => SignIn()));
-                    setState(() {
-                      loading = false;
-                    });
-                  },
-                ),
-              ],
-            ),
-          );}
-          else{
-            return  Scaffold(backgroundColor: Color(0xffF7F7F7),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Post()));
+                    },
+                  ),
+                  SpeedDialChild(
+                    child: Icon(Icons.open_in_new),
+                    backgroundColor: Color(0xff004766),
+                    label: 'Log-out',
+                    labelStyle: TextStyle(fontSize: _width * 0.04),
+                    onTap: () async {
+                      setState(() {
+                        loading = true;
+                      });
+                      await usercontroller.logout();
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => SignIn()));
+                      setState(() {
+                        loading = false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Scaffold(
+                backgroundColor: Color(0xffF7F7F7),
                 body: Center(child: Text('Nothing to show')));
           }
         });

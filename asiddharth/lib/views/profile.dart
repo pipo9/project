@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +14,7 @@ class Profile extends StatefulWidget {
   final poster;
   Profile({this.poster});
   @override
-  _ProfileState createState() => _ProfileState(poster:poster);
+  _ProfileState createState() => _ProfileState(poster: poster);
 }
 
 class _ProfileState extends State<Profile> {
@@ -27,7 +27,8 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final theuser=poster!=null?poster:FirebaseAuth.instance.currentUser.uid;
+    final theuser =
+        poster != null ? poster : FirebaseAuth.instance.currentUser.uid;
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
     return FutureBuilder<DocumentSnapshot>(
@@ -62,17 +63,12 @@ class _ProfileState extends State<Profile> {
                                             InteractiveViewer(
                                               child: Container(
                                                   height: _height * 0.3,
-                                                  width: _width * 0.5,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            _width * 0.2),
-                                                  ),
                                                   child: Center(
                                                       child: user['image'] !=
                                                               null
                                                           ? Image.network(
                                                               user['image'],
+                                                              fit: BoxFit.cover,
                                                             )
                                                           : Icon(
                                                               Icons.person))),
@@ -80,8 +76,10 @@ class _ProfileState extends State<Profile> {
                                           ]));
                                     });
                               } else {
-                                _userModel.fileImage =
-                                    await controller.getImage();
+                                var x = await controller.getImage();
+                                setState(() {
+                                  _userModel.fileImage = x;
+                                });
                               }
                             },
                             child: Container(
@@ -96,11 +94,17 @@ class _ProfileState extends State<Profile> {
                               child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.circular(_width * 0.35),
-                                child: user['image'] != null
-                                    ? Image.network(
-                                        user['image'],
-                                        fit: BoxFit.fill,
-                                      )
+                                child: _userModel.fileImage != null ||
+                                        user['image'] != null
+                                    ? _userModel.fileImage != null
+                                        ? Image.file(
+                                            _userModel.fileImage,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.network(
+                                            user['image'],
+                                            fit: BoxFit.cover,
+                                          )
                                     : Icon(
                                         Icons.person,
                                         size: _width * 0.3,
@@ -139,95 +143,103 @@ class _ProfileState extends State<Profile> {
                           SizedBox(
                             height: _height * 0.1,
                           ),
-                          theuser==FirebaseAuth.instance.currentUser.uid?Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    enabled = true;
-                                  });
-                                },
-                                child: Container(
-                                  height: _height * 0.06,
-                                  width: _width * 0.4,
-                                  decoration: BoxDecoration(
-                                      color: Colors.teal,
-                                      borderRadius:
-                                      BorderRadius.circular(_width * 0.1)),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(0).copyWith(
-                                        left: _width * 0.03, right: _width * 0.015),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Edit",
-                                          style: GoogleFonts.robotoSlab(
-                                              fontSize: _width * 0.04),
+                          theuser == FirebaseAuth.instance.currentUser.uid
+                              ? Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          enabled = true;
+                                        });
+                                      },
+                                      child: Container(
+                                        height: _height * 0.06,
+                                        width: _width * 0.4,
+                                        decoration: BoxDecoration(
+                                            color: Colors.teal,
+                                            borderRadius: BorderRadius.circular(
+                                                _width * 0.1)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(0).copyWith(
+                                              left: _width * 0.03,
+                                              right: _width * 0.015),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Edit",
+                                                style: GoogleFonts.robotoSlab(
+                                                    fontSize: _width * 0.04),
+                                              ),
+                                              Icon(
+                                                Icons.mode_edit,
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                        Icon(
-                                          Icons.mode_edit,
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  setState(() {
-                                    loading = true;
-                                  });
-                                  if (enabled == true) {
-                                    await controller.UpdateuserInfo(
-                                        FirebaseAuth.instance.currentUser.uid,
-                                        _userModel.username != null
-                                            ? _userModel.username
-                                            : user['name'],
-                                        _userModel.useremail != null
-                                            ? _userModel.useremail
-                                            : user['email'],
-                                        _userModel.fileImage.path);
-                                    setState(() {
-                                      enabled = false;
-                                      loading = false;
-                                    });
-                                  } else {}
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(top: _height * 0.02),
-                                  height: _height * 0.06,
-                                  width: _width * 0.4,
-                                  decoration: BoxDecoration(
-                                      color: Colors.teal,
-                                      borderRadius:
-                                      BorderRadius.circular(_width * 0.1)),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(0).copyWith(
-                                        left: _width * 0.03, right: _width * 0.015),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Update",
-                                          style: GoogleFonts.robotoSlab(
-                                              fontSize: _width * 0.04),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          loading = true;
+                                        });
+                                        if (enabled == true) {
+                                          await controller.UpdateuserInfo(
+                                              FirebaseAuth
+                                                  .instance.currentUser.uid,
+                                              _userModel.username != null
+                                                  ? _userModel.username
+                                                  : user['name'],
+                                              _userModel.useremail != null
+                                                  ? _userModel.useremail
+                                                  : user['email'],
+                                              _userModel.fileImage);
+                                          setState(() {
+                                            enabled = false;
+                                            loading = false;
+                                          });
+                                        } else {}
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            top: _height * 0.02),
+                                        height: _height * 0.06,
+                                        width: _width * 0.4,
+                                        decoration: BoxDecoration(
+                                            color: Colors.teal,
+                                            borderRadius: BorderRadius.circular(
+                                                _width * 0.1)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(0).copyWith(
+                                              left: _width * 0.03,
+                                              right: _width * 0.015),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Update",
+                                                style: GoogleFonts.robotoSlab(
+                                                    fontSize: _width * 0.04),
+                                              ),
+                                              Icon(
+                                                Icons.update,
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                        Icon(
-                                          Icons.update,
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
+                                )
+                              : Text(
+                                  'Welcome to my page',
+                                  style: GoogleFonts.roboto(
+                                      fontSize: _height * 0.03,
+                                      color: Colors.teal),
                                 ),
-                              ),
-                            ],
-                          ):Text(
-                            'Welcome to my page',
-                            style:GoogleFonts.roboto(fontSize:_height*0.03,color:Colors.teal),
-                          ),
                           SizedBox(
                             height: _height * 0.10,
                           ),

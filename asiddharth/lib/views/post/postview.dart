@@ -51,126 +51,129 @@ class _Poststateview extends State<PostView> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Padding(
-                              padding:
-                                  EdgeInsets.all(0).copyWith(top: _height * 0.01),
-                              child: Image.network(post['imagepath']),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(0).copyWith(
-                                top: _height * 0.015,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: (){
-                                            Navigator.push(
+                            Container(
+                                margin: EdgeInsets.all(0).copyWith(
+                                    top: _height * 0.01,
+                                    bottom: _height * 0.01),
+                                height: _height,
+                                width: _width,
+                                child: Image.network(
+                                  post['imagepath'],
+                                  fit: BoxFit.fill,
+                                )),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => Profile(
+                                                      poster: user['id'])));
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.only(
+                                              left: _width * 0.03),
+                                          height: _width * 0.15,
+                                          width: _width * 0.15,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.teal),
+                                              color: Colors.black,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      _width * 0.15)),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                                _width * 0.15),
+                                            child: user['image'] != null
+                                                ? Image.network(
+                                                    user['image'],
+                                                    fit: BoxFit.fill,
+                                                  )
+                                                : Icon(
+                                                    Icons.person,
+                                                    size: _width * 0.08,
+                                                    color: Colors.teal,
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(0)
+                                            .copyWith(left: _width * 0.03),
+                                        child: Text(
+                                          user['name'],
+                                          style: GoogleFonts.robotoSlab(
+                                              fontSize: _width * 0.04),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      post["userid"] ==
+                                              FirebaseAuth
+                                                  .instance.currentUser.uid
+                                          ? IconButton(
+                                              icon: Icon(Icons.delete_forever),
+                                              onPressed: () async {
+                                                setState(() {
+                                                  loading = false;
+                                                });
+                                                Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            HomePage()));
+                                                final res = await postcontroller
+                                                    .deletpost(
+                                                        id, post['imagepath']);
+                                                setState(() {
+                                                  loading = false;
+                                                });
+                                                Toast.show(
+                                                    res['message'], context,
+                                                    duration: Toast.LENGTH_LONG,
+                                                    gravity: Toast.BOTTOM);
+                                              },
+                                            )
+                                          : SizedBox(),
+                                      SizedBox(
+                                        width: _width * 0.05,
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                            post['status'] == 'public'
+                                                ? Icons.cloud_download
+                                                : Icons.not_interested,
+                                            color: post['status'] == 'public'
+                                                ? Colors.teal
+                                                : Colors.deepOrange),
+                                        onPressed: () async {
+                                          if (post['status'] == 'public') {
+                                            final res = await postcontroller
+                                                .downloadpostimage(
+                                                    post['imagepath']);
+                                            Toast.show(res['message'], context,
+                                                duration: Toast.LENGTH_LONG,
+                                                gravity: Toast.BOTTOM);
+                                          } else {
+                                            Toast.show(
+                                                'this image can not be downloaded',
                                                 context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Profile(poster:user['id'])));
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(left:_width*0.03),
-                                            height: _width * 0.15,
-                                            width: _width * 0.15,
-                                            decoration: BoxDecoration(
-                                                border:
-                                                    Border.all(color: Colors.teal),
-                                                color: Colors.black,
-                                                borderRadius: BorderRadius.circular(
-                                                    _width * 0.15)),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(
-                                                  _width * 0.15),
-                                              child: user['image'] != null
-                                                  ? Image.network(
-                                                      user['image'],
-                                                      fit: BoxFit.fill,
-                                                    )
-                                                  : Icon(
-                                                      Icons.person,
-                                                      size: _width * 0.08,
-                                                      color: Colors.teal,
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(0)
-                                              .copyWith(left: _width * 0.03),
-                                          child: Text(
-                                            user['name'],
-                                            style: GoogleFonts.robotoSlab(
-                                                fontSize: _width * 0.04),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        post["userid"] ==
-                                                FirebaseAuth
-                                                    .instance.currentUser.uid
-                                            ? IconButton(
-                                                icon: Icon(Icons.delete_forever),
-                                                onPressed: () async {
-                                                  setState(() {
-                                                    loading = false;
-                                                  });
-                                                  Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              HomePage()));
-                                                  final res = await postcontroller
-                                                      .deletpost(
-                                                          id, post['imagepath']);
-                                                  setState(() {
-                                                    loading = false;
-                                                  });
-                                                  Toast.show(
-                                                      res['message'], context,
-                                                      duration: Toast.LENGTH_LONG,
-                                                      gravity: Toast.BOTTOM);
-                                                },
-                                              )
-                                            : SizedBox(),
-                                        SizedBox(
-                                          width: _width * 0.05,
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                              post['status'] == 'public'
-                                                  ? Icons.cloud_download
-                                                  : Icons.not_interested,
-                                              color: post['status'] == 'public'
-                                                  ? Colors.teal
-                                                  : Colors.deepOrange),
-                                          onPressed: () async {
-                                            if (post['status'] == 'public') {
-                                              final res = await postcontroller
-                                                  .downloadpostimage(
-                                                      post['imagepath']);
-                                              Toast.show(res['message'], context,
-                                                  duration: Toast.LENGTH_LONG,
-                                                  gravity: Toast.BOTTOM);
-                                            } else {
-                                              Toast.show(
-                                                  'this image can not be downloaded',
-                                                  context,
-                                                  duration: Toast.LENGTH_LONG,
-                                                  gravity: Toast.BOTTOM);
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ]),
-                            ),
+                                                duration: Toast.LENGTH_LONG,
+                                                gravity: Toast.BOTTOM);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ]),
                             SizedBox(
                               height: _height * 0.01,
                             ),
@@ -188,10 +191,12 @@ class _Poststateview extends State<PostView> {
                               color: Colors.teal,
                             ),
                             Align(
-                              alignment:AlignmentDirectional.bottomStart,
+                              alignment: AlignmentDirectional.bottomStart,
                               child: Padding(
-                                padding:
-                                    EdgeInsets.all(0).copyWith(left: _width * 0.06,top:_height*0.03,bottom:_height*0.03 ),
+                                padding: EdgeInsets.all(0).copyWith(
+                                    left: _width * 0.06,
+                                    top: _height * 0.03,
+                                    bottom: _height * 0.03),
                                 child: Text(
                                   post['description'] != null
                                       ? post['description']

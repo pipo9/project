@@ -12,13 +12,12 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double _height = MediaQuery.of(context).size.height;
     return FlatButton(
       onPressed: ontap,
       child: Container(
         child:Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 8,
+            vertical: 10,
             horizontal: 26,
           ),
           child: Text(
@@ -31,7 +30,15 @@ class Button extends StatelessWidget {
         ),
         decoration: BoxDecoration(
             color: color,
-            borderRadius:BorderRadius.circular(20)
+            borderRadius:BorderRadius.circular(40),
+            boxShadow:[
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 4,
+                blurRadius: 6,
+                offset: Offset(0, 2), // changes position of shadow
+              ),
+            ],
         ),
 
       ),
