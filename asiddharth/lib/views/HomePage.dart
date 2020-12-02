@@ -52,7 +52,7 @@ class _HomeState extends State<HomePage> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(_height * 0.025)
+                        padding: EdgeInsets.all(_height * 0.01)
                             .copyWith(bottom: _height * 0.01),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -167,9 +167,6 @@ class _HomeState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: _height * 0.03,
-                      )
                     ],
                   ),
                 ),

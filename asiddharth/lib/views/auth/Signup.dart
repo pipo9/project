@@ -99,7 +99,7 @@ class _SignUPState extends State<SignUP> {
                   hintText: 'confirme  your password',
                   icon: Icons.lock,
                   password: true,
-                  controller:confpasswordTextController,
+                  controller: confpasswordTextController,
                   onChanged: (value) {
                     setState(() {
                       password = value;
@@ -120,20 +120,22 @@ class _SignUPState extends State<SignUP> {
                   text: 'SignUP',
                   ontap: () async {
                     setState(() {
-                      loading=true;
+                      loading = true;
                     });
-                      final response = await controller.signup(user.useremail, user.userpassword,password, user.username);
-                      if (response['status']==true) {
-                        emailTextController.clear();
-                        passwordTextController.clear();
-                        nameTextController.clear();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>SignIn()));
-                      }
-                      else{
-                        Toast.show(response['message'], context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
-                      }
+                    final response = await controller.signup(user.useremail,
+                        user.userpassword, password, user.username);
+                    if (response['status'] == true) {
+                      emailTextController.clear();
+                      passwordTextController.clear();
+                      nameTextController.clear();
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => SignIn()));
+                    } else {
+                      Toast.show(response['message'], context,
+                          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                    }
                     setState(() {
-                      loading=false;
+                      loading = false;
                     });
                   })
             ],
